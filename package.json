@@ -1,0 +1,22 @@
+{
+  "name": "routes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SmallhillCZ/routes.git"
+  },
+  "author": "Martin Kopeček <maritn.kopecek@smallhill.cz>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/SmallhillCZ/routes/issues"
+  },
+  "homepage": "https://github.com/SmallhillCZ/routes#readme",
+  "dependencies": {
+    "mongo-parse": "^2.1.0"
+  }
+}
