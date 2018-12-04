@@ -1,5 +1,7 @@
 const mongoParser = require("mongo-parse");
 
+declare var routesStore;
+
 module.exports = function(schema,options){
 
   var defaultOptions = {
