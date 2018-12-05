@@ -5,6 +5,7 @@ export interface RoutesOptions {
     info?: any;
     middleware?: Array<(req: any, res: any, next: any) => void>;
     routerOptions?: express.RouterOptions;
+    rootEndpoint: boolean;
 }
 export declare class Routes {
     options: RoutesOptions;

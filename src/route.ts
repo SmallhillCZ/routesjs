@@ -2,7 +2,6 @@
 import { Routes } from "./routes";
 
 export interface RouteOptions {
-  query?:any;
   hidden?:boolean
 }
 
@@ -34,6 +33,7 @@ export class Route {
     this.resource = def.resource;
     
     this.href = this.routes.options.url + this.path.replace(/\/\:([^\/]+)(\/|$)/,"\/{$1}$2");
+    this.href = this.href.replace(/\/$/,""); // remove trailing slash
     
     this.options = def.options || {};
 

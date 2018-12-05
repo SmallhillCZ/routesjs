@@ -19,12 +19,15 @@
   },
   "homepage": "https://github.com/SmallhillCZ/routes#readme",
   "dependencies": {
+    "mongo-parse": "^2.1.0"
+  },
+  "peerDependencies": {
+    "express": "^4.16.0"
+  },
+  "devDependencies": {
     "@types/express": "^4.16.0",
     "@types/mongoose": "^5.3.2",
     "@types/node": "^10.12.12",
-    "mongo-parse": "^2.1.0"
-  },
-  "devDependencies": {
     "typescript": "^3.2.1"
   }
 }

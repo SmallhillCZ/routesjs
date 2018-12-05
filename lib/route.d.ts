@@ -1,6 +1,5 @@
 import { Routes } from "./routes";
 export interface RouteOptions {
-    query?: any;
     hidden?: boolean;
 }
 export interface RouteDef {

@@ -11,7 +11,7 @@ export interface RoutesMongoosePluginOptions {
 export function routesMongoosePlugin(schema:mongoose.Schema,options:RoutesMongoosePluginOptions){
 
   var defaultOptions = {
-    cmpFn: (doc,resource) => doc.constructor.modelName.toLowerCase() === resource,
+    cmpFn: (doc,resource) => doc.constructor.modelName.toLowerCase() === resource.split(":")[0],
     expFn: (doc,href) => href.replace(/\{id}/,doc._id)
   };
 
@@ -22,9 +22,12 @@ export function routesMongoosePlugin(schema:mongoose.Schema,options:RoutesMongoo
     const links = {};
 
     routesStore.routes
-      .filter(route => options.cmpFn(this,route.options.resource))
-      .filter(route => !route.options.mongoose.queryParsed || route.options.mongoose.queryParsed.matches(this,false))
-      .forEach(route => links[route.options.link] = ({ href: options.expFn(this,route.options.href) }))
+      .filter(route => options.cmpFn(this,route.resource))
+      .forEach(route => {
+        const match = route.resource.match(/^[^\:]+\:(.+)$/);
+        const link = match ? match[1] : "self";
+        links[link] = { href: options.expFn(this,route.href) };
+      });
 
     return links;
   });

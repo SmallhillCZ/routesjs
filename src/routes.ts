@@ -9,8 +9,12 @@ export interface RoutesOptions {
   url:string;
   
   info?:any;
+  
   middleware?:Array<(req,res,next) => void>;
+  
   routerOptions?:express.RouterOptions;
+  
+  rootEndpoint:boolean;
 }
 
 export class Routes {
@@ -30,7 +34,7 @@ export class Routes {
     
     this.router = express.Router(options.routerOptions);
 
-    this.router.get("/",this.serveApiRoot.bind(this));
+    if(options.rootEndpoint) this.router.get("/",this.serveApiRoot.bind(this));
     
   }
 
@@ -52,10 +56,12 @@ export class Routes {
 
   delete(resource:string, path:string, options:RouteOptions) {
     return this.createRoute("delete", resource, path, options)
-  }
+  }  
 
   createRoute(method:string, resource:string, path:string, options:RouteOptions){
 
+    if(!path) throw new Error("Missing path");
+    
     const routeDef = { method, resource, path, options }
 
     // save resource link
@@ -79,6 +85,7 @@ export class Routes {
     for ( let route of this.routes ) {
 
       if(route.options.hidden) continue;
+      if(!route.resource) continue;
 
       api._links[route.resource] = {
         href: route.href
