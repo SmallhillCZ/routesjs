@@ -1,6 +1,9 @@
 import * as express from "express";
 
-declare var routesStore;
+import { Route, RouteDef, RouteOptions } from "./route";
+import { RoutesStore } from "./routes-store";
+
+declare var routesStore:RoutesStore;
 
 export interface RoutesOptions {
   url:string;
@@ -10,23 +13,9 @@ export interface RoutesOptions {
   routerOptions?:express.RouterOptions;
 }
 
-export interface RouteOptions {
-  query?:any;
-  hidden?:boolean
-}
-
-export interface RouteDef {
-  method:string;
-  resource:string;
-
-  path:string;
-
-  options:RouteOptions;
-}
-
 export class Routes {
 
-  routes:RoutesRoute[] = [];
+  routes:Route[] = [];
 
   router:express.Router;  
 
@@ -70,7 +59,7 @@ export class Routes {
     const routeDef = { method, resource, path, options }
 
     // save resource link
-    const route = new RoutesRoute(this, routeDef);
+    const route = new Route(this, routeDef);
 
     this.routes.push(route);
 
@@ -98,39 +87,4 @@ export class Routes {
 
     res.json(api);
   };
-}
-
-class RoutesRoute {
-
-  method:string;
-  path:string;
-  
-  resource:string;
-  
-  href:string;
-
-  options:RouteOptions;
-
-  constructor(private routes:Routes, def:RouteDef){
-
-    this.method = def.method;
-    this.path = def.path;
-    
-    this.resource = def.resource;
-    
-    this.href = this.routes.options.url + this.path.replace(/\/\:([^\/]+)(\/|$)/,"\/{$1}$2");
-    
-    this.options = def.options || {};
-
-  }
-
-  handle(handler){
-    const method = this.method.toLowerCase();
-    const path = this.path;
-    const defaultMiddleware = this.routes.options.middleware || [];
-    const middleware = [ ...defaultMiddleware, ...arguments ];
-    
-    if(middleware.length) this.routes.router[method](path, ...middleware);
-  }
-
 }

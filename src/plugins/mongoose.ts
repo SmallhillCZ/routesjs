@@ -1,13 +1,19 @@
-const mongoParser = require("mongo-parse");
+import * as mongoParser from "mongo-parse";
+import * as mongoose from 'mongoose';
 
 declare var routesStore;
 
-module.exports = function(schema,options){
+export interface RoutesMongoosePluginOptions {
+  cmpFn: (doc:mongoose.Document,resource:string) => boolean;
+  expFn: (doc:mongoose.Document,href:string) => boolean;
+}
+
+export function routesMongoosePlugin(schema:mongoose.Schema,options:RoutesMongoosePluginOptions){
 
   var defaultOptions = {
     cmpFn: (doc,resource) => doc.constructor.modelName.toLowerCase() === resource,
     expFn: (doc,href) => href.replace(/\{id}/,doc._id)
-  }
+  };
 
   options = Object.assign({},defaultOptions,options);
   
