@@ -1,7 +1,9 @@
 import { Route } from "./route";
-import { RoutesOptions } from "./routes";
+import * as express from "express";
 
-export interface RoutesStore {
-  routes:Route[];
-  options:RoutesOptions;
-}
+export const RoutesStore = {
+  routes: [],
+  options: {
+    asyncAccess: false
+  }
+};

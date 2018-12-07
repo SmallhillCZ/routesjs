@@ -1,3 +1,4 @@
 export { Routes } from "./routes";
 export { Route, RouteOptions } from "./route";
-export { rootEndpoint } from "./root-endpoint";
+export { RoutesLinks } from "./links";
+export { RoutesLinksRoot } from "./links-root";

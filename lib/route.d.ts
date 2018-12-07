@@ -1,6 +1,10 @@
 import { Routes } from "./routes";
+import * as express from "express";
 export interface RouteOptions {
-    hidden?: boolean;
+    hideRoot?: boolean;
+    hideDocs?: boolean;
+    query?: any;
+    access?: (req: express.Request) => any | Promise<any>;
 }
 export interface RouteDef {
     method: string;
@@ -13,9 +17,18 @@ export declare class Route {
     method: string;
     path: string;
     resource: string;
+    link: string;
     href: string;
-    options: RouteOptions;
+    query: {
+        matches: (doc: any, validate: boolean) => boolean;
+    };
+    access: any;
+    hideRoot: boolean;
+    hideDocs: boolean;
     constructor(routes: Routes, def: RouteDef);
-    routesMiddleware(req: any, res: any, next: any): void;
+    routesAccessMiddleware(req: any, res: any, next: any): void;
+    accessError(req: any, res: any, next: any): void;
+    accessContinue(req: any, res: any, next: any): void;
+    routesReqMiddleware(req: any, res: any, next: any): void;
     handle(handler: any): void;
 }

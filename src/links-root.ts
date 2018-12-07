@@ -1,8 +1,6 @@
 import { RoutesStore } from "./routes-store";
 
-declare var routesStore:RoutesStore;
-
-export function rootEndpoint(options){
+export function RoutesLinksRoot(options){
   return function (req,res,next){
 
     const api = {
@@ -13,12 +11,15 @@ export function rootEndpoint(options){
     
     if(options && options.info) Object.assign(api,options.info);
 
-    for ( let route of routesStore.routes ) {
+    for ( let route of RoutesStore.routes ) {
 
-      if(route.options.hidden) continue;
+      console.log(route);
+      if(route.hideRoot) continue;
       if(!route.resource) continue;
 
-      api._links[route.resource] = {
+      const link = route.resource + (route.link ? ":" + route.link : "");
+      
+      api._links[link] = {
         href: route.href
       };
     }

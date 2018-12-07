@@ -2,10 +2,7 @@ import * as express from "express";
 import { Route, RouteOptions } from "./route";
 export interface RoutesOptions {
     url: string;
-    info?: any;
-    middleware?: Array<(req: any, res: any, next: any) => void>;
     routerOptions?: express.RouterOptions;
-    rootEndpoint: boolean;
 }
 export declare class Routes {
     instanceOptions: RoutesOptions;

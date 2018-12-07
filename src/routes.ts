@@ -3,18 +3,11 @@ import * as express from "express";
 import { Route, RouteDef, RouteOptions } from "./route";
 import { RoutesStore } from "./routes-store";
 
-declare var routesStore:RoutesStore;
-
 export interface RoutesOptions {
   url:string;
   
-  info?:any;
-  
-  middleware?:Array<(req,res,next) => void>;
-  
   routerOptions?:express.RouterOptions;
   
-  rootEndpoint:boolean;
 }
 
 export class Routes {
@@ -27,12 +20,12 @@ export class Routes {
 
   constructor(public instanceOptions:RoutesOptions){
     
-    this.options = Object.assign({},routesStore.options,instanceOptions);
+    this.options = instanceOptions;
     
     if(!this.options) throw new Error("You have to provide configuration");
     if(!this.options.url) throw new Error("You have to provide api root url");
     
-    this.routes = routesStore.routes;
+    this.routes = RoutesStore.routes;
     
     this.router = express.Router(this.options.routerOptions);
     
@@ -61,6 +54,8 @@ export class Routes {
   createRoute(method:string, resource:string, path:string, options:RouteOptions){
 
     if(!path) throw new Error("Missing path");
+    
+    if(!options) options = {};
     
     const routeDef = { method, resource, path, options }
 
