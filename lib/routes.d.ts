@@ -9,6 +9,7 @@ export declare class Routes {
     routes: Route[];
     router: express.Router;
     options: RoutesOptions;
+    rootUrl: string;
     constructor(instanceOptions: RoutesOptions);
     get(resource: string, path: string, options: RouteOptions): Route;
     post(resource: string, path: string, options: RouteOptions): Route;

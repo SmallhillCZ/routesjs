@@ -5,7 +5,7 @@ export function RoutesLinksRoot(options){
 
     const api = {
       _links: {
-        self: options && options.url || "/"
+        self: options && options.url || req.originalUrl
       }
     };
     
@@ -13,7 +13,6 @@ export function RoutesLinksRoot(options){
 
     for ( let route of RoutesStore.routes ) {
 
-      console.log(route);
       if(route.hideRoot) continue;
       if(!route.resource) continue;
 

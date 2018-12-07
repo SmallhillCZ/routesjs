@@ -17,13 +17,14 @@ export class Routes {
   router:express.Router;  
   
   options:RoutesOptions;
+  
+  rootUrl:string;
 
   constructor(public instanceOptions:RoutesOptions){
     
     this.options = instanceOptions;
     
-    if(!this.options) throw new Error("You have to provide configuration");
-    if(!this.options.url) throw new Error("You have to provide api root url");
+    this.rootUrl = this.options.url || "/";
     
     this.routes = RoutesStore.routes;
     

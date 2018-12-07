@@ -1,6 +1,6 @@
 import { Route } from "./route";
 import { RoutesStore } from "./routes-store";
-import { Links } from "./specs/hal";
+import { HalLinks } from "./specs/hal";
 
 import * as express from "express";
 
@@ -11,23 +11,27 @@ export function RoutesLinks(docs:any|any[],resource:string,req:express.Request):
   if(RoutesStore.options.asyncAccess){
     return (async function(){
       if(Array.isArray(docs)){
-        for(let doc of docs){
-          doc._links = await createLinksAsync(routes,doc,req);
-        }
+        for(let doc of docs) await setLinksAsync(routes,doc,req);
       }
-      else docs._links = await createLinksAsync(routes,docs,req);
+      else await setLinksAsync(routes,docs,req);
     })();
   }
   else {
-    if(Array.isArray(docs)) docs.forEach(doc => doc._links = createLinksSync(routes,doc,req));
-    else docs._links = createLinksSync(routes,docs,req);
+    if(Array.isArray(docs)){
+      for(let doc of docs) setLinksSync(routes,doc,req);
+    }
+    else setLinksSync(routes,docs,req);
     return;
   }
   
 }
   
-function createLinksSync(routes:Route[],doc:any,req:express.Request):Links{
-  const links = {};
+function setLinksSync(routes:Route[],doc:any,req:express.Request):void{
+ 
+  const links:HalLinks = {
+    self: { href: undefined }
+  };
+  
   for(let route of routes){
     
     if(route.hideDocs) continue;
@@ -36,15 +40,23 @@ function createLinksSync(routes:Route[],doc:any,req:express.Request):Links{
     
     if(route.access && !route.access(req)) continue;
     
-    links[route.link || "self"] = {
+    const linkName = route.link || "self";
+    
+    links[linkName] = {
       href: route.href.replace(/\{([^\}]+)\}/g, (match,key) => doc[key] || match)
-    }
+    };
   }
-  return links;
+  
+  if(!doc._links) doc._links = {};
+  Object.assign(doc._links,links);
 }
 
-async function createLinksAsync(routes:Route[],doc:any,req:express.Request):Promise<Links>{
-  const links = {};
+async function setLinksAsync(routes:Route[],doc:any,req:express.Request):Promise<void>{
+  
+  const links:HalLinks = {
+    self: { href: undefined }
+  };
+
   for(let route of routes){
     
     if(route.hideDocs) continue;
@@ -53,9 +65,13 @@ async function createLinksAsync(routes:Route[],doc:any,req:express.Request):Prom
     
     if(route.access && !await Promise.resolve(route.access(req))) continue;
     
-    links[route.link || "self"] = {
+    const linkName = route.link || "self";
+    
+    links[linkName] = {
       href: route.href.replace(/\{([^\}]+)\}/g, (match,key) => doc[key] || match)
-    }
+    };
   }
-  return links;
+  
+  if(!doc._links) doc._links = {};
+  Object.assign(doc._links,links);
 }

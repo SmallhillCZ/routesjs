@@ -1,8 +1,12 @@
-export interface Links {
-  [resource:string]: Link
+export interface HalDoc {
+  _links?:HalLink
+}
+export interface HalLinks {
+  self: HalLink;
+  [resource:string]: HalLink;
 }
 
-export interface Link {
+export interface HalLink {
   href:string;
   templated?:boolean;
 }
