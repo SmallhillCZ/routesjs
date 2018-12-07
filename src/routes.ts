@@ -22,19 +22,19 @@ export class Routes {
   routes:Route[] = [];
 
   router:express.Router;  
+  
+  options:RoutesOptions;
 
-  constructor(public options:RoutesOptions){
+  constructor(public instanceOptions:RoutesOptions){
     
-    if(!options) throw new Error("You have to provide configuration");
-    if(!options.url) throw new Error("You have to provide api root url");
+    this.options = Object.assign({},routesStore.options,instanceOptions);
     
-    this.options = options;
-
+    if(!this.options) throw new Error("You have to provide configuration");
+    if(!this.options.url) throw new Error("You have to provide api root url");
+    
     this.routes = routesStore.routes;
     
-    this.router = express.Router(options.routerOptions);
-
-    if(options.rootEndpoint) this.router.get("/",this.serveApiRoot.bind(this));
+    this.router = express.Router(this.options.routerOptions);
     
   }
 
@@ -72,26 +72,5 @@ export class Routes {
     return route;
 
   }
-
-  serveApiRoot(req,res,next){
-
-    const api = {
-      ...this.options.info,
-      _links: {
-        self: this.options.url
-      }
-    };
-
-    for ( let route of this.routes ) {
-
-      if(route.options.hidden) continue;
-      if(!route.resource) continue;
-
-      api._links[route.resource] = {
-        href: route.href
-      };
-    }
-
-    res.json(api);
-  };
+  
 }

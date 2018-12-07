@@ -38,12 +38,20 @@ export class Route {
     this.options = def.options || {};
 
   }
+  
+  routesMiddleware(req,res,next){
+    req.routes = {
+      route: this
+    };
+    next();
+  }
 
   handle(handler){
     const method = this.method.toLowerCase();
     const path = this.path;
-    const defaultMiddleware = this.routes.options.middleware || [];
-    const middleware = [ ...defaultMiddleware, ...arguments ];
+    const globalMiddleware = this.routes.options.middleware || [];
+    
+    const middleware = [this.routesMiddleware.bind(this), ...globalMiddleware, ...arguments];
     
     if(middleware.length) this.routes.router[method](path, ...middleware);
   }

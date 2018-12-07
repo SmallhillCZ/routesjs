@@ -16,5 +16,6 @@ export declare class Route {
     href: string;
     options: RouteOptions;
     constructor(routes: Routes, def: RouteDef);
+    routesMiddleware(req: any, res: any, next: any): void;
     handle(handler: any): void;
 }

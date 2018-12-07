@@ -8,15 +8,15 @@ export interface RoutesOptions {
     rootEndpoint: boolean;
 }
 export declare class Routes {
-    options: RoutesOptions;
+    instanceOptions: RoutesOptions;
     routes: Route[];
     router: express.Router;
-    constructor(options: RoutesOptions);
+    options: RoutesOptions;
+    constructor(instanceOptions: RoutesOptions);
     get(resource: string, path: string, options: RouteOptions): Route;
     post(resource: string, path: string, options: RouteOptions): Route;
     put(resource: string, path: string, options: RouteOptions): Route;
     patch(resource: string, path: string, options: RouteOptions): Route;
     delete(resource: string, path: string, options: RouteOptions): Route;
     createRoute(method: string, resource: string, path: string, options: RouteOptions): Route;
-    serveApiRoot(req: any, res: any, next: any): void;
 }
