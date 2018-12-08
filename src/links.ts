@@ -7,14 +7,22 @@ import { HalLinks } from "./specs/hal";
 
 import * as express from "express";
 
-export function RoutesLinks(docs:any|any[],resource:string,req:express.Request):void|Promise<void>{
+export function RoutesLinks(docs:any|any[],resource:string,req:express.Request):void|Promise<any>{
 
   const routes = routesStore.routes.filter(route => route.resource === resource)
+
+  if(docs.then !== undefined){
+    return docs.then(resolvedDocs => assignLinks(resolvedDocs,routes,req));
+  }
+  else assignLinks(docs,routes,req);
+}
+
+function assignLinks(docs:any|any[],routes:Route[],req:express.Request):void{
 
   const arrayDocs:any[] = Array.isArray(docs) ? docs : [docs];
 
   for(let doc of arrayDocs) {
-    
+
     const links:HalLinks = {
       self: { href: undefined }
     };
@@ -29,7 +37,7 @@ export function RoutesLinks(docs:any|any[],resource:string,req:express.Request):
 
       const linkName = route.link || "self";
       const href = route.getHref();
-      
+
       links[linkName] = {
         href: href.replace(/\{([^\}]+)\}/g, (match,key) => doc[key] || match)
       };
@@ -37,6 +45,6 @@ export function RoutesLinks(docs:any|any[],resource:string,req:express.Request):
 
     if(!doc._links) doc._links = {};
     Object.assign(doc._links,links);
-    
+
   }
 }
