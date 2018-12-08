@@ -66,9 +66,9 @@ export class Route {
   routesReqMiddleware(req,res,next){
     req.routes = {
       route: this,
-      routes: this.routes
+      routes: this.routes,
+      links: (docs,resource) => RoutesLinks(docs,resource,req)
     };
-    req.links = (docs,resource) => RoutesLinks(docs,resource,req);
     next();
   }
 

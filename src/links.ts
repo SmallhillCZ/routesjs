@@ -14,7 +14,7 @@ export function RoutesLinks(docs:any[],resource:string,req:express.Request):any[
 export function RoutesLinks(docs:any|any[]|Promise<any>|Promise<any[]>,resource:string,req:express.Request):any|any[]|Promise<any>|Promise<any[]>{
 
   const routes = routesStore.routes.filter(route => route.resource === resource)
-
+  
   if(docs.then !== undefined){
     return docs.then(resolvedDocs => assignLinks(resolvedDocs,routes,req));
   }
@@ -23,6 +23,11 @@ export function RoutesLinks(docs:any|any[]|Promise<any>|Promise<any[]>,resource:
 
 function assignLinks(docs:any|any[],routes:Route[],req:express.Request):void{
 
+  // convert Mongoose objects to standard objects
+  if(docs.toObject !== undefined) docs = docs.toObject();
+  if(Array.isArray(docs)) docs = docs.map(doc => doc.toObject !== undefined ? doc.toObject() : doc);
+
+  
   const arrayDocs:any[] = Array.isArray(docs) ? docs : [docs];
 
   for(let doc of arrayDocs) {
@@ -49,6 +54,7 @@ function assignLinks(docs:any|any[],routes:Route[],req:express.Request):void{
 
     if(!doc._links) doc._links = {};
     Object.assign(doc._links,links);
+  
 
   }
   
