@@ -7,16 +7,18 @@ import { HalLinks } from "./specs/hal";
 
 import * as express from "express";
 
-export function RoutesLinks(docs:Promise<any|any[]>,resource:string,req:express.Request):Promise<any>;
-export function RoutesLinks(docs:any|any[],resource:string,req:express.Request):void;
-export function RoutesLinks(docs:any|any[]|Promise<any|any[]>,resource:string,req:express.Request):void|Promise<any>{
+export function RoutesLinks(docs:Promise<any>,resource:string,req:express.Request):Promise<any>;
+export function RoutesLinks(docs:Promise<any[]>,resource:string,req:express.Request):Promise<any[]>;
+export function RoutesLinks(docs:any,resource:string,req:express.Request):any;
+export function RoutesLinks(docs:any[],resource:string,req:express.Request):any[];
+export function RoutesLinks(docs:any|any[]|Promise<any>|Promise<any[]>,resource:string,req:express.Request):any|any[]|Promise<any>|Promise<any[]>{
 
   const routes = routesStore.routes.filter(route => route.resource === resource)
 
   if(docs.then !== undefined){
     return docs.then(resolvedDocs => assignLinks(resolvedDocs,routes,req));
   }
-  else assignLinks(docs,routes,req);
+  else return assignLinks(docs,routes,req);
 }
 
 function assignLinks(docs:any|any[],routes:Route[],req:express.Request):void{
@@ -49,4 +51,6 @@ function assignLinks(docs:any|any[],routes:Route[],req:express.Request):void{
     Object.assign(doc._links,links);
 
   }
+  
+  return docs;
 }
