@@ -13,7 +13,7 @@ export function RoutesLinks(docs:any|any[],resource:string,req:express.Request):
 
   const arrayDocs:any[] = Array.isArray(docs) ? docs : [docs];
 
-  for(let doc of docs) {
+  for(let doc of arrayDocs) {
     
     const links:HalLinks = {
       self: { href: undefined }
