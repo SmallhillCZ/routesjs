@@ -7,7 +7,9 @@ import { HalLinks } from "./specs/hal";
 
 import * as express from "express";
 
-export function RoutesLinks(docs:any|any[],resource:string,req:express.Request):void|Promise<any>{
+export function RoutesLinks(docs:Promise<any|any[]>,resource:string,req:express.Request):Promise<any>;
+export function RoutesLinks(docs:any|any[],resource:string,req:express.Request):void;
+export function RoutesLinks(docs:any|any[]|Promise<any|any[]>,resource:string,req:express.Request):void|Promise<any>{
 
   const routes = routesStore.routes.filter(route => route.resource === resource)
 
