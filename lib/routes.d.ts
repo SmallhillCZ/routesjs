@@ -1,7 +1,8 @@
 import * as express from "express";
-import { Route, RouteOptions } from "./route";
+import { RouteOptions, ACLOptions } from "./interfaces";
+import { Route } from "./route";
 export interface RoutesOptions {
-    url: string;
+    url?: string;
     routerOptions?: express.RouterOptions;
 }
 export declare class Routes {
@@ -17,4 +18,7 @@ export declare class Routes {
     patch(resource: string, path: string, options: RouteOptions): Route;
     delete(resource: string, path: string, options: RouteOptions): Route;
     createRoute(method: string, resource: string, path: string, options: RouteOptions): Route;
+    child(path: string, childRoutes: Routes): void;
+    static setACL(acl: ACLOptions): void;
+    static setOptions(options: any): void;
 }

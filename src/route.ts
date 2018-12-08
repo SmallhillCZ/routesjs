@@ -1,41 +1,31 @@
 
+import { RouteOptions, RouteDef } from "./interfaces";
+
 import { Routes } from "./routes";
 import { RoutesLinks } from "./links";
-import { RoutesStore } from "./routes-store";
+import { RoutesACL } from "./acl";
+
+import { pathToTemplate } from "./functions";
+import { routesStore } from "./routes-store";
 
 import * as express from "express";
 
 import * as mongoParser from "mongo-parse";
 
-export interface RouteOptions {
-  hideRoot?:boolean;
-  hideDocs?:boolean;
-  query?:any;
-  access?:(req:express.Request) => any|Promise<any>;
-}
-
-export interface RouteDef {
-  method:string;
-  resource:string;
-
-  path:string;
-
-  options:RouteOptions;
-}
-
 export class Route {
 
   method:string;
   path:string;
-  
+
+  resourceString:string;
   resource:string;
   link:string;
-  
+
   href:string;
-  
+
   /* optional route options */
   query:{ matches: (doc:any,validate:boolean) => boolean };
-  access:any;
+  permission:any;
   hideRoot:boolean;
   hideDocs:boolean;
 
@@ -43,43 +33,36 @@ export class Route {
 
     this.method = def.method;
     this.path = def.path;
-    
-    const [,resource,link] = def.resource.match(/([^\:]+)\:?(.+)?/);
-    this.resource = resource;
-    this.link = link;
-    
-    this.href = this.routes.options.url + this.path.replace(/\:([^\/]+)/g,"{$1}");
-    this.href = this.href.replace(/\/$/,""); // remove trailing slash
-    
+
+    this.resourceString = def.resource;
+    if(def.resource){
+      const [,resource,link] = def.resource.match(/([^\:]+)\:?(.+)?/);
+      this.resource = resource;
+      this.link = link;
+    }
+
+    // convert express path to URI Template and remove trailing slash
+    this.href = pathToTemplate(this.path).replace(/\/$/,"");
+
     /* optional route options */
     this.query = def.options.query ? mongoParser.parse(def.options.query) : undefined;
-    this.access = def.options.access;
+    this.permission = def.options.permission;
     this.hideRoot = def.options.hideRoot;
     this.hideDocs = def.options.hideDocs;
-    
+
+    if(this.permission && !RoutesACL.isPermission(this.permission)) throw new Error("Permission " + this.permission + " is not defined.");
+    if(!this.permission) console.log("Routes warning: No defined permission for route " + this.href);
   }
   
+  getHref(){
+    return this.routes.rootUrl + this.href;
+  }
+
   routesAccessMiddleware(req,res,next){
-    
-    if(!this.access) return this.accessContinue(req,res,next);
-    
-    if(RoutesStore.options.asyncAccess){
-      this.access(req).then(result => !!result ? this.accessContinue(req,res,next) : this.accessError(req,res,next)).catch(this.accessError(req,res,next));
-    }
-    else{
-      if(!!this.access(req)) this.accessContinue(req,res,next);
-      else this.accessError(req,res,next);
-    }
+    if(!RoutesACL.canRoute(this,req)) return res.sendStatus(401);
+    else return next();
   }
-  
-  accessError(req,res,next) {
-    res.sendStatus(401);
-  }
-  
-  accessContinue(req,res,next){
-    next();
-  }
-  
+
   routesReqMiddleware(req,res,next){
     req.routes = {
       route: this,
@@ -88,17 +71,17 @@ export class Route {
     req.links = (docs,resource) => RoutesLinks(docs,resource,req);
     next();
   }
-  
+
   handle(handler){
     const method = this.method.toLowerCase();
     const path = this.path;
-    
+
     const middleware = [
-      this.routesReqMiddleware.bind(this),
       this.routesAccessMiddleware.bind(this),
+      this.routesReqMiddleware.bind(this),
       ...arguments
     ];
-    
+
     if(middleware.length) this.routes.router[method](path, ...middleware);
   }
 

@@ -1,9 +1,12 @@
 import { Route } from "./route";
+import { RoutesStore } from "./interfaces";
 import * as express from "express";
 
-export const RoutesStore = {
+export const routesStore:RoutesStore = {
   routes: [],
-  options: {
-    asyncAccess: false
-  }
-};
+  acl: {
+    permissions: {},
+    userRoles: (req:express.Request) => []
+  },
+  options: {},
+}

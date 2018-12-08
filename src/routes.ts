@@ -1,10 +1,13 @@
 import * as express from "express";
 
-import { Route, RouteDef, RouteOptions } from "./route";
-import { RoutesStore } from "./routes-store";
+import { RouteOptions, RouteDef, ACLOptions } from "./interfaces";
+import { Route } from "./route";
+
+import { routesStore } from "./routes-store";
+import { pathToTemplate } from "./functions";
 
 export interface RoutesOptions {
-  url:string;
+  url?:string;
   
   routerOptions?:express.RouterOptions;
   
@@ -18,17 +21,19 @@ export class Routes {
   
   options:RoutesOptions;
   
-  rootUrl:string;
+  rootUrl:string = "/";
 
   constructor(public instanceOptions:RoutesOptions){
     
-    this.options = instanceOptions;
+    this.options = instanceOptions || {};
     
     this.rootUrl = this.options.url || "/";
     
-    this.routes = RoutesStore.routes;
+    this.routes = routesStore.routes;
     
-    this.router = express.Router(this.options.routerOptions);
+    const routerOptions = Object.assign({mergeParams:true},this.options.routerOptions);
+    
+    this.router = express.Router(routerOptions);
     
   }
 
@@ -52,7 +57,7 @@ export class Routes {
     return this.createRoute("delete", resource, path, options)
   }  
 
-  createRoute(method:string, resource:string, path:string, options:RouteOptions){
+  createRoute(method:string, resource:string, path:string, options:RouteOptions):Route{
 
     if(!path) throw new Error("Missing path");
     
@@ -69,4 +74,21 @@ export class Routes {
 
   }
   
+  child(path:string,childRoutes:Routes):void{
+    // concatenate the path to set root for child
+    childRoutes.rootUrl = this.rootUrl.replace(/\/$/,"") + pathToTemplate(path);
+    // bind to the router
+    this.router.use(path,childRoutes.router);
+  }
+
+  static setACL(acl:ACLOptions){
+    if(!acl.permissions) throw new Error("ACLOptions are missing permissions parameter");
+    if(!acl.userRoles) throw new Error("ACLOptions are missing userRoles parameter");
+    Object.assign(routesStore.acl,acl);
+  }
+
+  static setOptions(options):void{
+    Object.assign(routesStore.options,options);
+  }
+
 }
