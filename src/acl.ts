@@ -66,7 +66,7 @@ export class RoutesACL {
   static canRoute(route:Route,req:express.Request):RoutesACLResult{
     
     // route that is not guarded by permission is allowed
-    if(!route.permission) return { allowed: true };
+    if(!route.permission) return { allowed: true, filters: [] };
       
     // route with permission is allowed/denied by ACL table 
     return RoutesACL.can(route.permission,req);
@@ -74,7 +74,7 @@ export class RoutesACL {
   
   static canDoc(permission:string,doc:any,req:express.Request):boolean{
     const aclResult = RoutesACL.can(permission,req);
-    return aclResult.allowed && (!aclResult.filters.length || !aclResult.filters.some(filter => !mongoParser.parse(filter).matches(doc,false)));
+    return aclResult.allowed && (!aclResult.filters.length || aclResult.filters.some(filter => mongoParser.parse(filter).matches(doc,false)));
   }
   
   static canRouteDoc(route:Route,doc:any,req:express.Request):boolean{

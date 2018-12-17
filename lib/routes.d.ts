@@ -9,7 +9,7 @@ export declare class Routes {
     instanceOptions?: RoutesOptions;
     parent: Routes;
     routes: Route[];
-    router: any;
+    router: express.Router;
     options: RoutesOptions;
     rootUrl: string;
     constructor(instanceOptions?: RoutesOptions);
