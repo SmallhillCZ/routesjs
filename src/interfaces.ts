@@ -15,6 +15,7 @@ export interface RouteOptions {
   hideDocs?:boolean;
   query?:any;
   permission?:string;
+  expand?:any;
 }
 
 export interface RouteDef {
@@ -26,16 +27,16 @@ export interface RouteDef {
   options:RouteOptions;
 }
 
-type ACLPermissionFunction = (permission:string,req:express.Request) => any;
+type ACLPermissionFunction = (permission:string,req:any) => any;
 
 export interface ACLOptions {
   permissions:{
     [permission:string]:{
-      [role:string]:boolean|ACLPermissionFunction
+      [role:string]:boolean|any|ACLPermissionFunction
     }
   };
 
-  userRoles:(req:express.Request) => string[];
+  userRoles:(req:any) => string[];
 
   defaultRole?:string;
 

@@ -14,6 +14,8 @@ import * as mongoParser from "mongo-parse";
 
 export class Route {
 
+  action:boolean;
+  
   method:string;
   path:string;
 
@@ -24,19 +26,22 @@ export class Route {
   href:string;
 
   /* optional route options */
-  query:{ matches: (doc:any,validate:boolean) => boolean };
+  query:any;
+  queryParsed:{ matches: (doc:any,validate:boolean) => boolean };
   permission:any;
   hideRoot:boolean;
   hideDocs:boolean;
+  expand:any;
 
   constructor(private routes:Routes, def:RouteDef){
 
-    this.method = def.method;
+    this.action = def.method.toLowerCase() === "action";
+    this.method = this.action ? "POST" : def.method;
     this.path = def.path;
 
     this.resourceString = def.resource;
     if(def.resource){
-      const [,resource,link] = def.resource.match(/([^\:]+)\:?(.+)?/);
+      const [resource,link] = def.resource.split(":");
       this.resource = resource;
       this.link = link;
     }
@@ -45,29 +50,38 @@ export class Route {
     this.href = pathToTemplate(this.path).replace(/\/$/,"");
 
     /* optional route options */
-    this.query = def.options.query ? mongoParser.parse(def.options.query) : undefined;
+    this.query = def.options.query || {};
+    this.queryParsed = def.options.query ? mongoParser.parse(def.options.query) : undefined;
     this.permission = def.options.permission;
     this.hideRoot = def.options.hideRoot;
     this.hideDocs = def.options.hideDocs;
+    this.expand = def.options.expand || {};
 
     if(this.permission && !RoutesACL.isPermission(this.permission)) throw new Error("Permission " + this.permission + " is not defined.");
     if(!this.permission) console.log("Routes warning: No defined permission for route " + this.href);
   }
   
   getHref(){
-    return this.routes.rootUrl + this.href;
+    return this.routes.getRootUrl() + this.href;
   }
 
   routesAccessMiddleware(req,res,next){
-    if(!RoutesACL.canRoute(this,req)) return res.sendStatus(401);
-    else return next();
+    const result = RoutesACL.canRoute(this,req)
+    
+    req.acl = result;
+    
+    if(result.allowed) next();
+    else res.sendStatus(401);
+    
+    this.logAccess(result,this.permission,req);
   }
 
   routesReqMiddleware(req,res,next){
     req.routes = {
       route: this,
       routes: this.routes,
-      links: (docs,resource) => RoutesLinks(docs,resource,req)
+      links: (docs,resource) => RoutesLinks.add(docs,resource,req),
+      findRoute: Routes.findRoute
     };
     next();
   }
@@ -83,6 +97,21 @@ export class Route {
     ];
 
     if(middleware.length) this.routes.router[method](path, ...middleware);
+  }
+  
+  logAccess(result,permission,req){
+    if(routesStore.acl.logConsole){
+
+      let logEvent = {
+        result: result,
+        req: req,
+        permission: permission
+      };        
+      let logString = routesStore.acl.logString(logEvent);
+
+      if(result) console.log(logString);
+      else console.error(logString);
+    }
   }
 
 }

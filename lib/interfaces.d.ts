@@ -1,4 +1,3 @@
-import * as express from "express";
 import { Route } from "./route";
 export interface RoutesStore {
     routes: Route[];
@@ -11,6 +10,7 @@ export interface RouteOptions {
     hideDocs?: boolean;
     query?: any;
     permission?: string;
+    expand?: any;
 }
 export interface RouteDef {
     method: string;
@@ -18,14 +18,14 @@ export interface RouteDef {
     path: string;
     options: RouteOptions;
 }
-declare type ACLPermissionFunction = (permission: string, req: express.Request) => any;
+declare type ACLPermissionFunction = (permission: string, req: any) => any;
 export interface ACLOptions {
     permissions: {
         [permission: string]: {
-            [role: string]: boolean | ACLPermissionFunction;
+            [role: string]: boolean | any | ACLPermissionFunction;
         };
     };
-    userRoles: (req: express.Request) => string[];
+    userRoles: (req: any) => string[];
     defaultRole?: string;
     logString?: (event: any) => string;
     logConsole?: boolean;

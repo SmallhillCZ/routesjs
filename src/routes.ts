@@ -14,6 +14,8 @@ export interface RoutesOptions {
 }
 
 export class Routes {
+  
+  parent:Routes;
 
   routes:Route[] = [];
 
@@ -23,7 +25,7 @@ export class Routes {
   
   rootUrl:string = "/";
 
-  constructor(public instanceOptions:RoutesOptions){
+  constructor(public instanceOptions?:RoutesOptions){
     
     this.options = instanceOptions || {};
     
@@ -56,6 +58,10 @@ export class Routes {
   delete(resource:string, path:string, options:RouteOptions) {
     return this.createRoute("delete", resource, path, options)
   }  
+  
+  action(resource:string, path:string, options:RouteOptions) {
+    return this.createRoute("action", resource, path, options)
+  }
 
   createRoute(method:string, resource:string, path:string, options:RouteOptions):Route{
 
@@ -76,9 +82,19 @@ export class Routes {
   
   child(path:string,childRoutes:Routes):void{
     // concatenate the path to set root for child
-    childRoutes.rootUrl = this.rootUrl.replace(/\/$/,"") + pathToTemplate(path);
+    childRoutes.rootUrl = pathToTemplate(path);
+    childRoutes.parent = this;
+    
     // bind to the router
     this.router.use(path,childRoutes.router);
+  }
+  
+  getRootUrl(){
+    return (this.parent ? this.parent.getRootUrl().replace(/\/$/,"") : "") + this.rootUrl;
+  }
+  
+  static findRoute(resource:string,link:string,method:string){    
+    return routesStore.routes.find(route => route.resource === resource && route.link === link && (method.toLowerCase() === "action" ? route.action === true : route.method === "action"));
   }
 
   static setACL(acl:ACLOptions){

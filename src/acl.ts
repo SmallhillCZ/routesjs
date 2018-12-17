@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as mongoParser from "mongo-parse";
 
 import { Route } from "./route";
 import { routesStore } from "./routes-store";
@@ -11,25 +12,29 @@ export class RoutesACLUnauthorizedError extends Error{
   }
 }
 
-export class RoutesACL {
+export interface RoutesACLResult {
+  allowed:boolean;
+  filters?:any[];
+}
 
+export class RoutesACL {
+  
   // function to get user roles and evaluate permissions
-  static can(permissionName:string,req:any,params?:any):boolean{
+  static can(permissionName:string,req:express.Request,params?:any):RoutesACLResult{
 
     if(!req) throw new Error("The req parameter is missing for can(permission,req,params?).")
 
     // get user roles
-    const userRoles = routesStore.acl.userRoles(req);
+    const userRoles = routesStore.acl.userRoles(req).slice(0);
     if(routesStore.acl.defaultRole) userRoles.push(routesStore.acl.defaultRole);
 
     // default is no permission
     const permission = routesStore.acl.permissions[permissionName];
 
-    // non existent permission does not allow
-    if(!permission) return false;
-
     // go through all roles and check if some has permission
-    return userRoles.some(roleName => {
+    const result = { allowed: false, filters: [] };
+    
+    userRoles.some(roleName => {
 
       const rolePermission = permission[roleName];
 
@@ -37,23 +42,46 @@ export class RoutesACL {
       if(!rolePermission) return false;
 
       // actual value allows if resolves to true-ish value
-      return (typeof rolePermission === 'function' ? rolePermission(req,params) : rolePermission);
+      const roleResult = (typeof rolePermission === 'function' ? rolePermission(req,params) : rolePermission);
+      
+      // true-ish results passes, object result means filter
+      if(roleResult) {
+        result.allowed = true;
+        if(typeof roleResult === "object") result.filters.push(roleResult);        
+      }
+      
+      // if result was general allowance nothing can be better, we dont have ot go through rest
+      if(roleResult === true){
+        result.filters = [];
+        return true;
+      }
 
     });
+    
+    return result;
 
   }
   
   // check if issuer of current request is allowed to access a certain route
-  static canRoute(route:Route,req:express.Request){
+  static canRoute(route:Route,req:express.Request):RoutesACLResult{
     
     // route that is not guarded by permission is allowed
-    if(!route.permission) return true;
+    if(!route.permission) return { allowed: true };
       
     // route with permission is allowed/denied by ACL table 
     return RoutesACL.can(route.permission,req);
   }
   
-  static guard(permission:string,params?:any):express.RequestHandler {
+  static canDoc(permission:string,doc:any,req:express.Request):boolean{
+    const aclResult = RoutesACL.can(permission,req);
+    return aclResult.allowed && (!aclResult.filters.length || !aclResult.filters.some(filter => !mongoParser.parse(filter).matches(doc,false)));
+  }
+  
+  static canRouteDoc(route:Route,doc:any,req:express.Request):boolean{
+    return route.permission ? RoutesACL.canDoc(route.permission,doc,req) : true;
+  }
+  
+  static guard(permission:string,params?:any):express.RequestHandler{
 
     if(!routesStore.acl.permissions[permission]) throw new Error(`Permission ${permission} not defined.`);
 
@@ -67,23 +95,12 @@ export class RoutesACL {
       var result = RoutesACL.can(permission,req,params);
 
       // if permission granted, send execution to the next middleware/route
-      if(!result) next(new RoutesACLUnauthorizedError("Permission " + permission + " not granted."));
+      if(!result.allowed) next(new RoutesACLUnauthorizedError("Permission " + permission + " not granted."));
 
       // if permission not granted, then end request with 401 Unauthorized
       else next();
 
-      if(routesStore.acl.logConsole){
-        let logEvent = {
-          result: result,
-          req: req,
-          params: params,
-          permission: permission
-        };        
-        let logString = routesStore.acl.logString(logEvent);
-
-        if(result) console.log(logString);
-        else console.error(logString);
-      }
+      this.logAccess(result,permission,params,req);
     }
 
   }
