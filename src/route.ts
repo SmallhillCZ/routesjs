@@ -58,7 +58,7 @@ export class Route {
     this.expand = def.options.expand || {};
 
     if(this.permission && !RoutesACL.isPermission(this.permission)) throw new Error("Permission " + this.permission + " is not defined.");
-    if(!this.permission) console.log("Routes warning: No defined permission for route " + this.resourceString + "(" + this.href + ")");
+    if(!this.permission) console.log("Routes warning: No defined permission for route " + this.resourceString + " (" + this.getHref() + ")");
   }
   
   getHref(){
