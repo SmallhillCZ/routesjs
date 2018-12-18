@@ -1,8 +1,4 @@
 theme: jekyll-theme-cayman
 
-toc:
-  min_level: 1 # default: 1
-  max_level: 2 # default: 6
-
-gems: 
- - jekyll-toc
+title: RoutesJS
+description: An opinionated REST HATEOAS ACL layer over ExpressJS
