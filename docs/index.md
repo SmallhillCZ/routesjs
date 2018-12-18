@@ -8,7 +8,7 @@ layout: default
 
 
 ## Import the routes library
-```javascript
+```typescript
 const { Routes } = require("@smallhillcz/routesjs");
 const routes = new Routes();
 ```
@@ -17,9 +17,11 @@ const routes = new Routes();
 
 ### Simplest route definition
 
-```javascript
+```typescript
 routes.get("events","/events");
 ```
+
+Provide name of the route and url.
 
 ### Handle the route with Express middleware
 ```javascript
@@ -63,14 +65,51 @@ routes.post("event:publish", "/events/:event/publish", { query: { status: "draft
   res.sendStatus(200);
 });
 ```
-
 ## Create root API endpoint
 
-### Either use routes way including permission to read api
+Either use routes way including permission to read api:
 ```js
 routes.get(null, "/", { permission: "api:read" }).handle((req,res) => {
   res.json({
     _links: RoutesLinks.root(req)
   });
+});
+```
+or use Express router:
+```js
+routes.router.get("/", (req,res) => {
+  res.json({
+    _links: RoutesLinks.root(req)
+  });
+});
+```
+
+## RoutesACL
+
+### Define user roles and permissions
+```js
+Routes.setACL({
+  permissions: {
+    "events:list": { admin: true, editor: true, guest: true }
+  },
+  defaultRole: "guest"
+});
+```
+Use preset vars to make more readable:
+```js
+
+const admin = true, editor = true, guest = true;
+
+Routes.setACL({
+  permissions: {
+    "events:list": { admin, editor, guest }
+  ...
+```
+
+### Limit route to users with certain permission (also limits route allowed indicator in `_links`)
+```js
+routes.post("events", "/events", { permission: "events:list" }).handle(async (req,res) => {
+  const events = await Event.find();
+  res.json(events);
 });
 ```
