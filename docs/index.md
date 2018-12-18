@@ -26,7 +26,7 @@ As far as I can say there is no NodeJS framework that would support:
  - [Routes](#routes)
     - Simplest route definition
     - Handle the route with Express middleware
-    - Limit route to be listed only under certain docs
+    - Limit route to be listed only under certain docs (uses [mongo-parse](https://www.npmjs.com/package/mongo-parse) fot matching)
  - [RoutesLinks](#routeslinks)
     - Create root API endpoint
     - Add the route to `_links` and `_actions` of documents
@@ -106,7 +106,7 @@ routes.get("posts","/posts").handle( async (req,res,next) => {
 });
 ```
 
-### Limit route to be listed only under certain docs
+### Limit route to be listed only under certain docs (uses [mongo-parse](https://www.npmjs.com/package/mongo-parse) fot matching)
 ```js
 routes.post("post:publish", "/posts/:post/publish", { query: { status: "draft" } }).handle(async (req,res) => {
   await Post.findOneAndUpdate({ id:req.params.event }, { status: "public" });
