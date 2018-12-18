@@ -4,7 +4,13 @@ description: An opinionated layer over ExpressJS
 layout: default
 ---
 
-# RoutesJS
+# Installation
+
+```sh
+npm i @smallhillcz/routesjs
+```
+
+# Examples
 
 
 ## Import the routes library
@@ -170,3 +176,20 @@ routes.get("my-events","/my/events").handle( async (req,res,next) => {
   res.json(events);
 });
 ```
+
+# Known limits
+
+### It is not possible to guard aganst doc, instead returns 404
+
+In the following code the constant `events` is going to be null as if event was not found. It is not possible to distinguaish from the case when event would be found but is not accessible due to permissions.
+
+```javascript
+routes.get("my-event","/my/events/:event").handle( async (req,res,next) => {
+  
+  const events = await Event.findOne().filterByPermission("my-events:read", req); // filter only my events
+  
+  res.json(events);
+});
+```
+
+
