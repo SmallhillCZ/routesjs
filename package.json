@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/SmallhillCZ/routes/issues"
   },
-  "homepage": "https://github.com/SmallhillCZ/routes#readme",
+  "homepage": "https://routesjs.com",
   "dependencies": {
     "mongo-parse": "^2.1.0"
   },
