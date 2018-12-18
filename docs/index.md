@@ -69,7 +69,7 @@ routes.child("/posts",require("./child");
 
 ### Binding Routes child to Express router
 ```js
-const router = express.Routes();
+const router = express.Router();
 
 router.use("/posts", require("./child").router);
 ```
