@@ -6,13 +6,14 @@ layout: default
 
 # RoutesJS
 
-## Simple route example
 
-### Import the routes library and create new router
+## Import the routes library
 ```javascript
 const { Routes } = require("@smallhillcz/routesjs");
 const routes = new Routes();
 ```
+
+## Simple route example
 
 ### Simplest route definition
 
