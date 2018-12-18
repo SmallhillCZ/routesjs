@@ -1,8 +1,14 @@
 {
   "name": "@smallhillcz/routesjs",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "REST HATEOAS ACL layer over ExpressJS",
-  "keywords": ["node","express","mongoose","HATEOAS","REST"],
+  "keywords": [
+    "node",
+    "express",
+    "mongoose",
+    "HATEOAS",
+    "REST"
+  ],
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
