@@ -4,16 +4,6 @@ description: An opinionated REST HATEOAS ACL layer over ExpressJS
 layout: default
 ---
 
- - [Installation](#installation)
- - [Motivation](#Motivation)
- - [Examples](#examples)
-   - [Import the routes library](#import-the-routes-library)
-   - [Routes](#routes)
-   - [RoutesLinks](#routes)
-   - [RoutesACL](#routes)
- - [Known limits](#known-limit)
- - [Contributing](#contibuting)
-
 # Installation
 
 ```sh
@@ -31,7 +21,11 @@ As far as I can say there is no NodeJS framework that would support:
 
 # Examples
 
-
+ - [Import the routes library](#import-the-routes-library)
+ - [Routes](#routes)
+ - [RoutesLinks](#routes)
+ - [RoutesACL](#routes)
+   
 ## Import the routes library
 ```typescript
 const { Routes } = require("@smallhillcz/routesjs");
