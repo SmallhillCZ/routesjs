@@ -15,6 +15,13 @@ As far as I can say there is no NodeJS framework that would support:
  - **Permission-based and workflow-based based filtering of routes and links**, i. e. "what user can" and "what is possible for document" respecitvely.
  - **Access control based on roles and document properties** allowing for checking against documents (if user has certain permission on a document) and filtering documents based on permission (which documents user has permission on)
 
+   
+## Dependencies
+
+Dependencies: [mongo-parse](https://www.npmjs.com/package/mongo-parse)
+
+Peer dependencies: [express](https://www.npmjs.com/package/express)
+
 # Examples
 
  - [Usage](#usage)
@@ -37,13 +44,33 @@ As far as I can say there is no NodeJS framework that would support:
  - [RoutesPluginMongoose](#routespluginmongoose)
     - Plug the plugin to Mongoose
     - Filter mongoose docs according to permissions
-   
+
 ## Usage
 
-### Import Routes router
-```typescript
+### Import Routes router and bind to Express App
+
+routes.js
+```js
 const { Routes } = require("@smallhillcz/routesjs");
 const routes = new Routes();
+
+// your routes
+routes.get("posts","/posts").handle(...);
+routes.get("posts","/posts/comments").handle(...);
+
+module.exports = routes;
+```
+
+app.js
+```js
+// load express app
+const express = require("express");
+const app = express();
+
+// bind Routes
+app.use("/", require("./routes");
+
+app.listen(...) // create server as per express documentation
 ```
 
 ### Making a child router
