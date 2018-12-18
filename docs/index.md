@@ -165,7 +165,7 @@ mongoose.plugin(RoutesPluginsMongoose);
 ```javascript
 routes.get("my-events","/my/events").handle( async (req,res,next) => {
   
-  const events = await Event.find().filterByPermission("my-events:list"); // filter only my events
+  const events = await Event.find().filterByPermission("my-events:list", req); // filter only my events
   
   res.json(events);
 });
