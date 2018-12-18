@@ -4,6 +4,7 @@ description: An opinionated layer over ExpressJS
 layout: default
 ---
 
+# Table of Contents
 * TOC
 {:toc}
 
