@@ -1,6 +1,4 @@
 ---
-title: RoutesJS
-description: An opinionated REST HATEOAS ACL layer over ExpressJS
 layout: default
 ---
 
