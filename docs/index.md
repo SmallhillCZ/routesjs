@@ -179,16 +179,21 @@ routes.get("my-events","/my/events").handle( async (req,res,next) => {
 
 # Known limits
 
-### It is not possible to guard aganst doc, instead returns 404
+### It is not possible to guard against doc, instead returns 404
 
-In the following code the constant `events` is going to be null as if event was not found. It is not possible to distinguaish from the case when event would be found but is not accessible due to permissions.
+In the following code the constant `events` is going to be `null` as if event was not found. It is not possible to distinguish non existent document from the case when document would be found but is not accessible due to permissions.
 
 ```javascript
 routes.get("my-event","/my/events/:event").handle( async (req,res,next) => {
   
-  const events = await Event.findOne().filterByPermission("my-events:read", req); // filter only my events
+  // get event from database
+  const event = await Event.findOne().filterByPermission("my-events:read", req); // filter only my events
   
-  res.json(events);
+  // event not found
+  if(!event) return res.sendStatus(404);
+  
+  // reurn event
+  res.json(event);
 });
 ```
 
