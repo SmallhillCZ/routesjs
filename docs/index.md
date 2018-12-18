@@ -29,25 +29,30 @@ routes.get("events","/events").handle( async (req,res,next) => {
 });
 ```
 
-### Add the route do _links of documents
+### Add the route to `_links` and `_actions` of documents
 ```javascript
 
+// define some routes to be added
 routes.get("event","/events/:event");
 routes.patch("event","/events/:event");
 routes.get("event:attendees","/events/:event/attendees");
 routes.action("event:publish","/events/:event/publish")
 
+// route to list events
 routes.get("events","/events").handle( async (req,res,next) => {
   
+  // get events
   const events = await Event.find().lean(); // mongoose objects cannot be modified, therefore .lean()
   
+  // append links
   req.routes.links(events,"event");
   
+  // return events to client
   res.json(events);
 });
 ```
 
-Each event will be appended with parameter `_links` containing links starting with `event:` and allowed for current user and current state of document 
+Each event will be appended with parameters `_links` and `_actions` containing links starting with `event:` and allowed for current user and current state of document 
 
 ## Advanced route settings
 
