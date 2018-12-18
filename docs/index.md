@@ -26,7 +26,7 @@ As far as I can say there is no NodeJS framework that would support:
  - [Routes](#routes)
     - Simplest route definition
     - Handle the route with Express middleware
-    - Limit route to be listed only under certain docs (uses [mongo-parse](https://www.npmjs.com/package/mongo-parse) fot matching)
+    - Limit route to be listed only under certain docs (uses [mongo-parse](https://www.npmjs.com/package/mongo-parse) for matching)
  - [RoutesLinks](#routeslinks)
     - Create root API endpoint
     - Add the route to `_links` and `_actions` of documents
