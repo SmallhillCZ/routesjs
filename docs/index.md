@@ -156,6 +156,8 @@ routes.post("events", "/events", { permission: "events:list" }).handle(async (re
 
 ```js
 const { RoutesPluginsMongoose } = require("@smallhillcz/routesjs/lib/plugins/mongoose");
+
+mongoose.plugin(RoutesPluginsMongoose);
 ```
 
 ### Filter mongoose docs according to permissions
