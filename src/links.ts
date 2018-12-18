@@ -57,7 +57,7 @@ export class RoutesLinks {
           allowed: {}
         };
       }
-      link.allowed[method] = RoutesACL.canRoute(route,req);
+      link.allowed[method] = !!RoutesACL.canRoute(route,req).allowed;
     }
 
     return links;

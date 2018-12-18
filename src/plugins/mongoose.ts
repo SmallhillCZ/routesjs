@@ -13,6 +13,7 @@ function filterByPermission(permission:string,req:express.Request,throwError?:bo
   if(aclResult.filters.length) this.where({ $or: aclResult.filters });
 
   return this;
+  
 }
 
 export function RoutesPluginsMongoose(schema){
