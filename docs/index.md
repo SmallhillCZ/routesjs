@@ -19,7 +19,7 @@ As far as I can say there is no NodeJS framework that would support:
 
 # Examples
 
- - [Usage](#import-the-library)
+ - [Usage](#usage)
  - [Routes](#routes)
  - [RoutesLinks](#routes)
  - [RoutesACL](#routes)
