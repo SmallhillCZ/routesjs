@@ -128,19 +128,18 @@ const permissions = {
 ### Set up RoutesACL
 ```js
 Routes.setACL({
-  permissions: resuire("./permissions.js")
-  defaultRole: "guest"
+  // permissions from previous part
+  permissions: require("./permissions"),
+  // function to get user roles from req
+  userRoles: req => req.user ? req.user.roles || [] : [],
+  // user role assigned to every request
+  defaultRole: "guest",
+  
+  // log route access to console
+  logConsole: true,
+  // how the log should look like
+  logString: event => `ACL ${event.result ? "OK" : "XX"} | permission: ${event.permission}, user: ${event.req.user ? event.req.user._id : "-"}, roles: ${event.req.user ? event.req.user.roles.join(",") : "-"}, ip: ${event.req.headers['x-forwarded-for'] || event.req.connection.remoteAddress}`
 });
-```
-
-```js
-
-const admin = true, editor = true, guest = true;
-
-Routes.setACL({
-  permissions: {
-    "events:list": { admin, editor, guest }
-  ...
 ```
 
 ### Limit route to users with certain permission (also limits route allowed indicator in `_links`)
@@ -153,7 +152,14 @@ routes.post("events", "/events", { permission: "events:list" }).handle(async (re
 
 ## RoutesPluginsMongoose
 
+### Plug the plugin to Mongoose
+
+```js
+const { RoutesPluginsMongoose } = require("@smallhillcz/routesjs/lib/plugins/mongoose");
+```
+
 ### Filter mongoose docs according to permissions
+
 ```javascript
 routes.get("my-events","/my/events").handle( async (req,res,next) => {
   
