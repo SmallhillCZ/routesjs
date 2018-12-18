@@ -47,7 +47,7 @@ Peer dependencies: [express](https://www.npmjs.com/package/express)
 
 ## Usage
 
-### Import Routes router and bind to Express App
+### Import Routes and bind to Express app
 
 routes.js
 ```js
