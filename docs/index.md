@@ -25,7 +25,7 @@ Peer dependencies: [express](https://www.npmjs.com/package/express)
 # Examples
 
  - [Usage](#usage)
-    - Import Routes router
+    - Import Routes and bind to Express app
     - Making a child router
     - Binding Routes child to Express router
     - Binding Routes child to Express app
