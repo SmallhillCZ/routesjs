@@ -1,6 +1,6 @@
 ---
 title: RoutesJS
-description: An opinionated layer over ExpressJS
+description: An opinionated REST HATEOAS ACL layer over ExpressJS
 layout: default
 ---
 
@@ -141,7 +141,7 @@ const permissions = {
 };
 ```
 
-#### Define condition or filter based on function(req)
+#### Define condition or filter based on function of `req`
 ```js
 const permissions = {
   ...
