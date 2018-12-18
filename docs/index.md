@@ -107,7 +107,7 @@ const permissions = {
   }
 };
 ```
-#### Define filter allow - as a route guard allows, for `_links` and RoutesPluginsMongoose also filters documents
+#### Define filter allow - as a route guard works same as `true`, for `_links` and RoutesPluginsMongoose also filters documents
 ```js
 const permissions = {
   ...
