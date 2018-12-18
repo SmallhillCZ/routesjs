@@ -1,6 +1,4 @@
 ---
-title: RoutesJS
-description: An opinionated layer over ExpressJS
 layout: default
 ---
 
@@ -10,13 +8,86 @@ layout: default
 npm i @smallhillcz/routesjs
 ```
 
+# Motivation
+
+As far as I can say there is no NodeJS framework that would support:
+ - Automatic named links generation for **discoverable APIs based on defined routes based on availability** (routes automatically appear in root API endpoint and individual documents' _links array depending if they are available)
+ - **Permission-based and workflow-based based filtering of routes and links**, i. e. what user can and what is possible for document respecitvely.
+ - **Access control based on roles and document properties** allowing for checking against documents (if user has certain permission on a document) and filtering documents based on permission (which documents user has permission on)
+ 
+ If you know about any, please let me know, I will gladly shut this down in a minute :)
+
 # Examples
 
+ - [Usage](#usage)
+  Import Routes router
+  Making a child router
+  Binding Routes child to Express router
+  Binding Routes child to Express app
+  Using Express router alongside Routes
+ - [Routes](#routes)
+  Simplest route definition
+  Handle the route with Express middleware
+  Limit route to be listed only under certain docs
+ - [RoutesLinks](#routeslinks)
+ Create root API endpoint
+ Add the route to `_links` and `_actions` of documents
+ - [RoutesACL](#routesacl)
+ Define user roles and permissions
+ Set up RoutesACL
+ Limit route to users with certain permission (also limits route allowed indicator in `_links`)
+ - [RoutesPluginMongoose](#routespluginmongoose)
+ Plug the plugin to Mongoose
+ Filter mongoose docs according to permissions
+   
+## Usage
 
-## Import the routes library
+### Import Routes router
 ```typescript
 const { Routes } = require("@smallhillcz/routesjs");
 const routes = new Routes();
+```
+
+### Making a child router
+child.js
+```js
+const { Routes } = require("@smallhillcz/routesjs");
+const routes = new Routes();
+
+// your child routes
+routes.get("posts","/").handle(...);
+routes.post("posts","/").handle(...);
+
+module.exports = routes;
+```
+
+main.js
+```js
+const { Routes } = require("@smallhillcz/routesjs");
+const routes = new Routes();
+
+routes.child("/posts",require("./child");
+```
+
+### Binding Routes child to Express router
+```js
+const router = express.Routes();
+
+router.use("/posts", require("./child").router);
+```
+
+### Binding Routes child to Express app
+```js
+const app = express();
+
+app.use("/posts", require("./child").router);
+```
+
+### Using Express router alongside Routes
+```js
+routes.routes.get(...);
+routes.routes.post(...);
+routes.routes.use(...);
 ```
 
 ## Routes
@@ -37,8 +108,6 @@ routes.get("posts","/posts").handle( async (req,res,next) => {
 });
 ```
 
-Each event will be appended with parameters `_links` and `_actions` containing links starting with `event:` and allowed for current user and current state of document 
-
 ### Limit route to be listed only under certain docs
 ```js
 routes.post("post:publish", "/posts/:post/publish", { query: { status: "draft" } }).handle(async (req,res) => {
@@ -55,6 +124,7 @@ Either use routes way including permission to read api:
 ```js
 routes.get(null, "/", { permission: "api:read" }).handle((req,res) => {
   res.json({
+    name: "My awesome API",
     _links: RoutesLinks.root(req)
   });
 });
@@ -63,9 +133,23 @@ or use Express router:
 ```js
 routes.router.get("/", (req,res) => {
   res.json({
+    name: "My awesome API",
     _links: RoutesLinks.root(req)
   });
 });
+```
+
+The output of `GET /` will look like this:
+```js
+{
+  name: "My awesome API",
+  _links: {
+    "self": { href: "/", allowed: { GET: true } }, 
+    "posts:self": { href: "/posts", allowed: { GET: true, POST: true } }, 
+    "post:self": { href: "/posts/:post", templated: true, allowed: { GET: true } }, 
+    "post:comments": { href: "/posts/:post/comments", templated: true, allowed: { GET: true } }
+  }
+}
 ```
 
 ### Add the route to `_links` and `_actions` of documents
@@ -84,11 +168,28 @@ routes.get("posts","/posts").handle( async (req,res,next) => {
   const posts = await Post.find().lean(); // mongoose objects cannot be modified, therefore .lean()
   
   // append links
-  req.routes.links(posts,"post");
+  req.routes.links(posts,"post"); // "post" defines which routes will be used, here staring with "post:"
   
   // return posts to client
   res.json(posts);
 });
+```
+
+The output of `GET /posts` will look like this:
+```js
+[
+ {
+  id: 1,
+  name: "Post name",
+  _links: {
+   "self": { href: "/posts/1", allowed: { GET: true, POST: true } }, 
+   "comments": { href: "/posts/1/comments", allowed: { GET: true } }
+  },
+  _actions: {
+   "publish": { href: "/posts/1", allowed: true }
+  },
+  ...
+]  
 ```
 
 
@@ -122,7 +223,7 @@ const permissions = {
 };
 ```
 
-#### Define condition or filter based on function(req)
+#### Define condition or filter based on function of `req`
 ```js
 const permissions = {
   ...
@@ -196,5 +297,3 @@ routes.get("my-event","/my/events/:event").handle( async (req,res,next) => {
   res.json(event);
 });
 ```
-
-
