@@ -20,9 +20,25 @@ As far as I can say there is no NodeJS framework that would support:
 # Examples
 
  - [Usage](#usage)
+  Import Routes router
+  Making a child router
+  Binding Routes child to Express router
+  Binding Routes child to Express app
+  Using Express router alongside Routes
  - [Routes](#routes)
- - [RoutesLinks](#routes)
- - [RoutesACL](#routes)
+  Simplest route definition
+  Handle the route with Express middleware
+  Limit route to be listed only under certain docs
+ - [RoutesLinks](#routeslinks)
+ Create root API endpoint
+ Add the route to `_links` and `_actions` of documents
+ - [RoutesACL](#routesacl)
+ Define user roles and permissions
+ Set up RoutesACL
+ Limit route to users with certain permission (also limits route allowed indicator in `_links`)
+ - [RoutesPluginMongoose](#routespluginmongoose)
+ Plug the plugin to Mongoose
+ Filter mongoose docs according to permissions
    
 ## Usage
 
@@ -281,7 +297,3 @@ routes.get("my-event","/my/events/:event").handle( async (req,res,next) => {
   res.json(event);
 });
 ```
-
-# Contributing
-
-TODO :(
