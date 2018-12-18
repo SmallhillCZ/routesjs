@@ -2,15 +2,12 @@ import { RoutesACL } from "../acl";
 
 import * as express from "express";
 
-function filterByPermission(permission:string,req:express.Request,throwError:boolean){
+function filterByPermission(permission:string,req:express.Request,throwError?:boolean){
 
   const aclResult = RoutesACL.can(permission,req);
 
   if(!aclResult.allowed){
-    if(throwError) {
-      console.log("throw");
-      throw new Error("Unauthorized");
-    }
+    if(throwError) throw new Error("Unauthorized");
     else this.where({nonexistentrouteswherevariable:5});
   }
   if(aclResult.filters.length) this.where({ $or: aclResult.filters });
