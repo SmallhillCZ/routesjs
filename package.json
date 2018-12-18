@@ -1,7 +1,8 @@
 {
   "name": "@smallhillcz/routesjs",
-  "version": "1.3.1",
-  "description": "",
+  "version": "1.3.2",
+  "description": "REST HATEOAS ACL layer over ExpressJS",
+  "keywords": ["node","express","mongoose","HATEOAS","REST"],
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
@@ -11,12 +12,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SmallhillCZ/routes.git"
+    "url": "git+https://github.com/SmallhillCZ/routesjs.git"
   },
   "author": "Martin Kopeček <maritn.kopecek@smallhill.cz>",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/SmallhillCZ/routes/issues"
+    "url": "https://github.com/SmallhillCZ/routesjs/issues"
   },
   "homepage": "https://routesjs.com",
   "dependencies": {
