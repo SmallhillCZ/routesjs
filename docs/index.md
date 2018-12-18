@@ -4,6 +4,9 @@ description: An opinionated layer over ExpressJS
 layout: default
 ---
 
+* TOC
+{:toc}
+
 # Installation
 
 ```sh
