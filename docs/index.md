@@ -55,8 +55,8 @@ const { Routes } = require("@smallhillcz/routesjs");
 const routes = new Routes();
 
 // your routes
-routes.get("posts","/posts").handle(...);
-routes.get("posts","/posts/comments").handle(...);
+routes.get("posts","/posts").handle( (req,res,next) => { ... } );
+routes.get("posts","/posts/comments").handle( (req,res,next) => { ... } );
 
 module.exports = routes;
 ```
