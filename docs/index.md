@@ -7,6 +7,9 @@ layout: default
 ```sh
 npm i @smallhillcz/routesjs
 ```
+Dependencies: [mongo-parse](https://www.npmjs.com/package/mongo-parse)
+
+Peer dependencies: [express](https://www.npmjs.com/package/express)
 
 # Motivation
 
@@ -18,7 +21,7 @@ As far as I can say there is no NodeJS framework that would support:
 # Examples
 
  - [Usage](#usage)
-    - Import Routes router
+    - Import Routes and bind to Express app
     - Making a child router
     - Binding Routes child to Express router
     - Binding Routes child to Express app
@@ -37,13 +40,33 @@ As far as I can say there is no NodeJS framework that would support:
  - [RoutesPluginMongoose](#routespluginmongoose)
     - Plug the plugin to Mongoose
     - Filter mongoose docs according to permissions
-   
+
 ## Usage
 
-### Import Routes router
-```typescript
+### Import Routes and bind to Express app
+
+routes.js
+```js
 const { Routes } = require("@smallhillcz/routesjs");
 const routes = new Routes();
+
+// your routes
+routes.get("posts","/posts").handle( (req,res,next) => { ... } );
+routes.get("posts","/posts/comments").handle( (req,res,next) => { ... } );
+
+module.exports = routes;
+```
+
+app.js
+```js
+// load express app
+const express = require("express");
+const app = express();
+
+// bind Routes
+app.use("/", require("./routes");
+
+app.listen(...) // create server as per express documentation
 ```
 
 ### Making a child router
@@ -69,7 +92,7 @@ routes.child("/posts",require("./child");
 
 ### Binding Routes child to Express router
 ```js
-const router = express.Routes();
+const router = express.Router();
 
 router.use("/posts", require("./child").router);
 ```
