@@ -19,15 +19,59 @@ As far as I can say there is no NodeJS framework that would support:
 
 # Examples
 
- - [Import the routes library](#import-the-routes-library)
+ - [Usage](#import-the-library)
  - [Routes](#routes)
  - [RoutesLinks](#routes)
  - [RoutesACL](#routes)
    
-## Import the routes library
+## Usage
+
+### Import Routes router
 ```typescript
 const { Routes } = require("@smallhillcz/routesjs");
 const routes = new Routes();
+```
+
+### Making a child router
+child.js
+```js
+const { Routes } = require("@smallhillcz/routesjs");
+const routes = new Routes();
+
+// your child routes
+routes.get("posts","/").handle(...);
+routes.post("posts","/").handle(...);
+
+module.exports = routes;
+```
+
+main.js
+```js
+const { Routes } = require("@smallhillcz/routesjs");
+const routes = new Routes();
+
+routes.child("/posts",require("./child");
+```
+
+### Binding Routes child to Express router
+```js
+const router = express.Routes();
+
+router.use("/posts", require("./child").router);
+```
+
+### Binding Routes child to Express app
+```js
+const app = express();
+
+app.use("/posts", require("./child").router);
+```
+
+### Using Express router alongside Routes
+```js
+routes.routes.get(...);
+routes.routes.post(...);
+routes.routes.use(...);
 ```
 
 ## Routes
