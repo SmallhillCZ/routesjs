@@ -48,8 +48,6 @@ routes.get("posts","/posts").handle( async (req,res,next) => {
 });
 ```
 
-Each event will be appended with parameters `_links` and `_actions` containing links starting with `event:` and allowed for current user and current state of document 
-
 ### Limit route to be listed only under certain docs
 ```js
 routes.post("post:publish", "/posts/:post/publish", { query: { status: "draft" } }).handle(async (req,res) => {
@@ -66,6 +64,7 @@ Either use routes way including permission to read api:
 ```js
 routes.get(null, "/", { permission: "api:read" }).handle((req,res) => {
   res.json({
+    name: "My awesome API",
     _links: RoutesLinks.root(req)
   });
 });
@@ -74,9 +73,23 @@ or use Express router:
 ```js
 routes.router.get("/", (req,res) => {
   res.json({
+    name: "My awesome API",
     _links: RoutesLinks.root(req)
   });
 });
+```
+
+The output of `GET /` will look like this:
+```js
+{
+  name: "My awesome API",
+  _links: {
+    "self": { href: "/", allowed: { GET: true } }, 
+    "posts:self": { href: "/posts", allowed: { GET: true, POST: true } }, 
+    "post:self": { href: "/posts/:post", templated: true, allowed: { GET: true } }, 
+    "post:comments": { href: "/posts/:post/comments", templated: true, allowed: { GET: true } }
+  }
+}
 ```
 
 ### Add the route to `_links` and `_actions` of documents
@@ -95,11 +108,28 @@ routes.get("posts","/posts").handle( async (req,res,next) => {
   const posts = await Post.find().lean(); // mongoose objects cannot be modified, therefore .lean()
   
   // append links
-  req.routes.links(posts,"post");
+  req.routes.links(posts,"post"); // "post" defines which routes will be used, here staring with "post:"
   
   // return posts to client
   res.json(posts);
 });
+```
+
+The output of `GET /posts` will look like this:
+```js
+[
+ {
+  id: 1,
+  name: "Post name",
+  _links: {
+   "self": { href: "/posts/1", allowed: { GET: true, POST: true } }, 
+   "comments": { href: "/posts/1/comments", allowed: { GET: true } }
+  },
+  _actions: {
+   "publish": { href: "/posts/1", allowed: true }
+  },
+  ...
+]  
 ```
 
 
