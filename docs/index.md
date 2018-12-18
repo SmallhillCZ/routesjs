@@ -4,9 +4,15 @@ description: An opinionated layer over ExpressJS
 layout: default
 ---
 
-# Table of Contents
-* TOC
-{:toc}
+ - [Installation](#installation)
+ - [Motivation](#Motivation)
+ - [Examples](#examples)
+   - [Import the routes library](#import-the-routes-library)
+   - [Routes](#routes)
+   - [RoutesLinks](#routes)
+   - [RoutesACL](#routes)
+ - [Known limits](#known-limit)
+ - [Contributing](#contibuting)
 
 # Installation
 
@@ -210,4 +216,6 @@ routes.get("my-event","/my/events/:event").handle( async (req,res,next) => {
 });
 ```
 
+# Contributing
 
+TODO :(
