@@ -63,7 +63,7 @@ export class RoutesLinks {
     return links;
   }
 
-  static assignLinks(docs:any|any[],routes:Route[],req:express.Request):Resource|Resource[]{
+  static assignLinks(docs:any|any[],routes:Route[],req:express.Request,options:any = {}):Resource|Resource[]{
 
     const arrayDocs:any[] = Array.isArray(docs) ? docs : [docs];
 
@@ -72,20 +72,22 @@ export class RoutesLinks {
       const self:any = { href: undefined, allowed: {} };
       const links:Links = { self };
       const actions:Actions = { };
+      
+      const docData = options.noStringify ? doc : JSON.parse(JSON.stringify(doc));
 
       for(let route of routes){
 
         if(route.hideDocs) continue;
-
-        if(route.queryParsed && !route.queryParsed.matches(doc,false)) continue;
+        
+        if(route.queryParsed && !route.queryParsed.matches(docData,false)) continue;
         
         // check if ACL doc allowed
-        const allowed = RoutesACL.canRouteDoc(route,doc,req);
+        const allowed = RoutesACL.canRouteDoc(route,docData,req);
 
         const linkName = route.link || "self";
         const method = route.method.toUpperCase();
 
-        const href = route.getHref().replace(/\{([^\}]+)\}/g, (match,key) => doc[route.expand[key]] || doc[key] || match);
+        const href = route.getHref().replace(/\{([^\}]+)\}/g, (match,key) => docData[route.expand[key]] || docData[key] || match);
         
         if(route.action){
           actions[linkName] = {

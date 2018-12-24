@@ -11,5 +11,5 @@ export declare class RoutesLinks {
             href: string;
         };
     };
-    static assignLinks(docs: any | any[], routes: Route[], req: express.Request): Resource | Resource[];
+    static assignLinks(docs: any | any[], routes: Route[], req: express.Request, options?: any): Resource | Resource[];
 }

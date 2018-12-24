@@ -74,7 +74,8 @@ export class RoutesACL {
   
   static canDoc(permission:string,doc:any,req:express.Request):boolean{
     const aclResult = RoutesACL.can(permission,req);
-    return aclResult.allowed && (!aclResult.filters.length || aclResult.filters.some(filter => mongoParser.parse(filter).matches(doc,false)));
+    const filtersAllowed = aclResult.filters.length ? aclResult.filters.some(filter => mongoParser.parse(filter).matches(doc,false)) : true;
+    return aclResult.allowed && filtersAllowed;
   }
   
   static canRouteDoc(route:Route,doc:any,req:express.Request):boolean{
