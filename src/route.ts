@@ -71,7 +71,11 @@ export class Route {
     req.acl = result;
     
     if(result.allowed) next();
-    else res.sendStatus(403);
+    else {
+      const authenticated = routesStore.acl.authenticated;
+      if(authenticated) res.sendStatus(403);
+      else res.sendStatus(401);
+    }
     
     this.logAccess(result,this.permission,req);
   }
