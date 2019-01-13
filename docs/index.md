@@ -87,7 +87,7 @@ main.js
 const { Routes } = require("@smallhillcz/routesjs");
 const routes = new Routes();
 
-routes.child("/posts",require("./child");
+routes.child("/posts",require("./child"));
 ```
 
 ### Binding Routes child to Express router
