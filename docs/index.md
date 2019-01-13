@@ -203,7 +203,7 @@ The output of `GET /posts` will look like this:
   id: 1,
   name: "Post name",
   _links: {
-   "self": { href: "/posts/1", allowed: { GET: true, POST: true } }, 
+   "self": { href: "/posts/1", allowed: { GET: true, PATCH: true } }, 
    "comments": { href: "/posts/1/comments", allowed: { GET: true } }
   },
   _actions: {
