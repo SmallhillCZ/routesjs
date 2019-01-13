@@ -106,9 +106,9 @@ app.use("/posts", require("./child").router);
 
 ### Using Express router alongside Routes
 ```js
-routes.routes.get(...);
-routes.routes.post(...);
-routes.routes.use(...);
+routes.router.get(...);
+routes.router.post(...);
+routes.router.use(...);
 ```
 
 ## Routes
