@@ -11,91 +11,91 @@ import * as express from "express";
 
 export class RoutesLinks {
 
-  static add(docs:Promise<any>,resource:string,req:express.Request):Promise<any>;
-  static add(docs:Promise<any[]>,resource:string,req:express.Request):Promise<any[]>;
-  static add(docs:any,resource:string,req:express.Request):any;
-  static add(docs:any[],resource:string,req:express.Request):any[];
-  static add(docs:any|any[]|Promise<any>|Promise<any[]>,resource:string,req:express.Request):any|any[]|Promise<any>|Promise<any[]>{
+  static add(docs: Promise<any>, resource: string, req: express.Request): Promise<any>;
+  static add(docs: Promise<any[]>, resource: string, req: express.Request): Promise<any[]>;
+  static add(docs: any, resource: string, req: express.Request): any;
+  static add(docs: any[], resource: string, req: express.Request): any[];
+  static add(docs: any | any[] | Promise<any> | Promise<any[]>, resource: string, req: express.Request): any | any[] | Promise<any> | Promise<any[]> {
 
     const routes = routesStore.routes.filter(route => route.resource === resource)
 
-    if(docs.then !== undefined){
-      return docs.then(resolvedDocs => RoutesLinks.assignLinks(resolvedDocs,routes,req));
+    if (docs.then !== undefined) {
+      return docs.then(resolvedDocs => RoutesLinks.assignLinks(resolvedDocs, routes, req));
     }
-    else return RoutesLinks.assignLinks(docs,routes,req);
+    else return RoutesLinks.assignLinks(docs, routes, req);
   }
 
-  static root(req){
+  static root(req) {
 
     const links = {
       self: { href: "/" }
     };
 
-    for ( let route of routesStore.routes ) {
+    for (let route of routesStore.routes) {
 
       // actions are not included in root
-      if(route.action) continue;
-      
+      if (route.action) continue;
+
       // route shall not be included in root
-      if(route.hideRoot) continue;
+      if (route.hideRoot) continue;
 
       // route is not assigned to a resource
-      if(!route.resourceString) continue;
+      if (!route.resourceString) continue;
 
       const linkName = route.resourceString;
       const method = route.method.toUpperCase();
-      
-      var link:any = links[linkName];
-      
-      if(!link){
-        
+
+      var link: any = links[linkName];
+
+      if (!link) {
+
         const href = route.getHref();
-        
+
         links[linkName] = link = {
           href: href,
           templated: href.match(/\{[^\}]+\}/) ? true : undefined,
           allowed: {}
         };
       }
-      link.allowed[method] = !!RoutesACL.canRoute(route,req).allowed;
+      link.allowed[method] = !!RoutesACL.canRoute(route, req).allowed;
     }
 
     return links;
   }
 
-  static assignLinks(docs:any|any[],routes:Route[],req:express.Request,options:any = {}):Resource|Resource[]{
+  static assignLinks(docs: any | any[], routes: Route[], req: express.Request, options: any = {}): Resource | Resource[] {
 
-    const arrayDocs:any[] = Array.isArray(docs) ? docs : [docs];
+    const arrayDocs: any[] = Array.isArray(docs) ? docs : [docs];
 
-    for(let doc of arrayDocs) {
+    for (let doc of arrayDocs) {
 
-      const self:any = { href: undefined, allowed: {} };
-      const links:Links = { self };
-      const actions:Actions = { };
-      
+      const self: any = { href: undefined, allowed: {} };
+      const links: Links = { self };
+      const actions: Actions = {};
+
       const docData = options.noStringify ? doc : JSON.parse(JSON.stringify(doc));
 
-      for(let route of routes){
+      for (let route of routes) {
 
-        if(route.hideDocs) continue;
-        
-        if(route.queryParsed && !route.queryParsed.matches(docData,false)) continue;
-        
+        if (route.hideDocs) continue;
+
+        if (route.queryParsed && !route.queryParsed.matches(docData, false)) continue;
+
         // check if ACL doc allowed
-        const allowed = RoutesACL.canRouteDoc(route,docData,req);
+        const allowed = RoutesACL.canRouteDoc(route, docData, req);
 
         const linkName = route.link || "self";
         const method = route.method.toUpperCase();
 
-        const href = route.getHref().replace(/\{([^\}]+)\}/g, (match,key) => docData[route.expand[key]] || docData[key] || match);
-        
-        if(route.action){
+        const href = route.getHref().replace(/\{([^\}]+)\}/g, (match, key) => docData[route.expand[key]] || docData[key] || match);
+
+        if (route.action) {
           actions[linkName] = {
             href: href,
             allowed: allowed
           };
         }
-        else if(links[linkName]) {
+        else if (links[linkName]) {
           links[linkName].href = href;
           links[linkName].allowed[method] = allowed;
         }
@@ -106,12 +106,12 @@ export class RoutesLinks {
           };
         }
       }
-      
-      if(!doc._links) doc._links = {};
-      if(!doc._actions) doc._actions = {};
-      
-      Object.assign(doc._links,links);
-      Object.assign(doc._actions,actions);
+
+      if (!doc._links) doc._links = {};
+      if (!doc._actions) doc._actions = {};
+
+      Object.assign(doc._links, links);
+      Object.assign(doc._actions, actions);
 
     }
 

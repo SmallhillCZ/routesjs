@@ -1,4 +1,4 @@
 export interface Action {
-  href:string;
-  allowed:boolean;
+  href: string;
+  allowed: boolean;
 }

@@ -14,40 +14,40 @@ import * as mongoParser from "mongo-parse";
 
 export class Route {
 
-  action:boolean;
-  
-  method:string;
-  path:string;
+  action: boolean;
 
-  resourceString:string;
-  resource:string;
-  link:string;
+  method: string;
+  path: string;
 
-  href:string;
+  resourceString: string;
+  resource: string;
+  link: string;
+
+  href: string;
 
   /* optional route options */
-  query:any;
-  queryParsed:{ matches: (doc:any,validate:boolean) => boolean };
-  permission:any;
-  hideRoot:boolean;
-  hideDocs:boolean;
-  expand:any;
+  query: any;
+  queryParsed: { matches: (doc: any, validate: boolean) => boolean };
+  permission: any;
+  hideRoot: boolean;
+  hideDocs: boolean;
+  expand: any;
 
-  constructor(private routes:Routes, def:RouteDef){
+  constructor(private routes: Routes, def: RouteDef) {
 
     this.action = def.method.toLowerCase() === "action";
     this.method = this.action ? "POST" : def.method;
     this.path = def.path;
 
     this.resourceString = def.resource;
-    if(def.resource){
-      const [resource,link] = def.resource.split(":");
+    if (def.resource) {
+      const [resource, link] = def.resource.split(":");
       this.resource = resource;
       this.link = link;
     }
 
     // convert express path to URI Template and remove trailing slash
-    this.href = pathToTemplate(this.path).replace(/\/$/,"");
+    this.href = pathToTemplate(this.path).replace(/\/$/, "");
 
     /* optional route options */
     this.query = def.options.query || {};
@@ -57,36 +57,36 @@ export class Route {
     this.hideDocs = def.options.hideDocs;
     this.expand = def.options.expand || {};
 
-    if(this.permission && !RoutesACL.isPermission(this.permission)) throw new Error("Permission " + this.permission + " is not defined.");
-    if(!this.permission) console.log("Routes warning: No defined permission for route " + this.resourceString + " (" + this.getHref() + ")");
+    if (this.permission && !RoutesACL.isPermission(this.permission)) throw new Error("Permission " + this.permission + " is not defined.");
+    if (!this.permission) console.log("Routes warning: No defined permission for route " + this.resourceString + " (" + this.getHref() + ")");
   }
-  
-  getHref(){
+
+  getHref() {
     return this.routes.getRootUrl() + this.href;
   }
 
-  routesAccessMiddleware(req,res,next){
-    const result = RoutesACL.canRoute(this,req)
-    
+  routesAccessMiddleware(req, res, next) {
+    const result = RoutesACL.canRoute(this, req)
+
     req.acl = result;
-    
-    if(result.allowed) next();
+
+    if (result.allowed) next();
     else res.sendStatus(403);
-    
-    this.logAccess(result,this.permission,req);
+
+    this.logAccess(result, this.permission, req);
   }
 
-  routesReqMiddleware(req,res,next){
+  routesReqMiddleware(req, res, next) {
     req.routes = {
       route: this,
       routes: this.routes,
-      links: (docs,resource) => RoutesLinks.add(docs,resource,req),
+      links: (docs, resource) => RoutesLinks.add(docs, resource, req),
       findRoute: Routes.findRoute
     };
     next();
   }
 
-  handle(handler){
+  handle(handler) {
     const method = this.method.toLowerCase();
     const path = this.path;
 
@@ -96,20 +96,20 @@ export class Route {
       ...arguments
     ];
 
-    if(middleware.length) this.routes.router[method](path, ...middleware);
+    if (middleware.length) this.routes.router[method](path, ...middleware);
   }
-  
-  logAccess(result,permission,req){
-    if(routesStore.acl.logConsole){
+
+  logAccess(result, permission, req) {
+    if (routesStore.acl.logConsole) {
 
       let logEvent = {
         result: result,
         req: req,
         permission: permission
-      };        
+      };
       let logString = routesStore.acl.logString(logEvent);
 
-      if(result) console.log(logString);
+      if (result) console.log(logString);
       else console.error(logString);
     }
   }
