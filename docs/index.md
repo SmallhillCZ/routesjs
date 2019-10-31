@@ -25,7 +25,7 @@ npm i @smallhillcz/routesjs
  
  - API should be self documented, changes in API should automatically propagate to docs
  
- - This framework should ~be independend of~ not reinvent the wheel and make use of underlying request handling solutions (ExpressJS, Fastify, Restify)
+ - This framework should ~~be independend of~~ not reinvent the wheel and make use of underlying request handling solutions (ExpressJS, Fastify, Restify)
 
 # Solution
 
