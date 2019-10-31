@@ -12,7 +12,7 @@ layout: default
  
  - Documents states should be, apart from standard CRUD operations, controlled by predefined workflows (e.g. draft -> pending approval -> published ).
  
- - Frontend should not (note: contradicts REST?!) know which state will document end in, just which action is available. For example blog writer should know that `publish` action is available for the user and document, but shouldn't know, that the document would go `pending approval`. This is driven by these thoughts:
+ - Frontend should not know which state will document end in (note: contradicts REST?), just which action is available. For example blog writer should know that `publish` action is available for the user and document, but shouldn't know, that the document would go `pending approval`. This is driven by these thoughts:
    - Frontend should not need to know the business logic of the workflow.
    - User should care only about their actions, not where the document goes next, i.e. separation of concerns.
    - When workflow changes, nothing should change for current action, if it is not the subject of change itself.
