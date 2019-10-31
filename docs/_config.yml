@@ -1,4 +1,4 @@
 theme: jekyll-theme-cayman
 
-title: RoutesJS
-description: REST HATEOAS ACL layer over ExpressJS
+title: "Concept: RoutesJS"
+description: REST + HATEOAS + Document level ACL
