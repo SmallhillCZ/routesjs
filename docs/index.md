@@ -14,10 +14,14 @@ Peer dependencies: [express](https://www.npmjs.com/package/express)
 # Motivation
 
 As far as I can say there is no NodeJS framework that would support:
- - Automatic named links generation for **discoverable APIs based on defined routes based on availability** (routes automatically appear in root API endpoint and individual documents' _links array depending if they are available)
+ - Automatic named links generation for **discoverable APIs of defined routes based on availability** (routes automatically appear in root API endpoint and individual documents' _links array depending on if they are available for current user and document)
  - **Permission-based and workflow-based based filtering of routes and links**, i. e. "what user can" and "what is possible for document" respecitvely.
- - **Access control based on roles and document properties** allowing for checking against documents (if user has certain permission on a document) and filtering documents based on permission (which documents user has permission on)
+ - **Access control based on roles and document properties** allowing for checking against documents (if user has certain permission on a document) and provide filtering of documents in DB based on permission (e.g. list documents user has permission to view)
 
+Additionally: 
+ - OpenAPI v3 support
+ - 
+ 
 # Examples
 
  - [Usage](#usage)
