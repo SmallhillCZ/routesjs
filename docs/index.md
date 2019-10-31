@@ -4,13 +4,13 @@ layout: default
 
 # Thoughts
 
- - Frontend should not decide what resources are available to current user, instead API should provide frontend with what is available.
+ - Frontend should not decide what resources are available to the current user, instead API should provide frontend with what is available.
  
- - Frontend may need to be built (and usually is) to handle API resources in a custom manner (i.e. display blog post). The documentation of the API resource endpoints needs to be provided.
+ - Frontend is build to handle API resources in a custom manner (i.e. display blog post). The documentation of the API resource endpoints needs to be provided to be used in framework code.
 
  - Permissions of users on documents should be abstracted from controllers
  
- - Documents states should be, apart from standard CRUD operations, controlled by predefined workflows (i.e. draft -> pending approval -> published ).
+ - Documents states should be, apart from standard CRUD operations, controlled by predefined workflows (e.g. draft -> pending approval -> published ).
  
  - Frontend should not (note: contradicts REST?!) know which state will document end in, just which action is available. For example blog writer should know that `publish` action is available for the user and document, but shouldn't know, that the document would go `pending approval`. This is driven by these thoughts:
    - Frontend should not need to know the business logic of the workflow.
