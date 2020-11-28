@@ -1,1 +1,0 @@
-{"version":3,"file":"routes-store.js","sourceRoot":"","sources":["../src/routes-store.ts"],"names":[],"mappings":";;AAIa,QAAA,WAAW,GAAe;IACrC,MAAM,EAAE,EAAE;IACV,GAAG,EAAE;QACH,WAAW,EAAE,EAAE;QACf,SAAS,EAAE,CAAC,GAAmB,EAAE,EAAE,CAAC,EAAE;KACvC;IACD,OAAO,EAAE,EAAE;CACZ,CAAA"}
